@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import se.jku.at.inout.OutTestHelper;
 
-public class A01_TicTacToeTest {
+public class A01_Tests {
 
     private ByteArrayOutputStream output;
 

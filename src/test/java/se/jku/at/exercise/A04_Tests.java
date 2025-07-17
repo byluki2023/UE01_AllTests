@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class A04_BetriebskostenrechnerTest {
+public class A04_Tests {
 
     static String distance;
     static String fuelCostPerLiter;

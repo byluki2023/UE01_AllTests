@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import se.jku.at.inout.OutTestHelper;
 
-public class A02_EinfacheRechnungenTest {
+public class A02_Tests {
 
     private static String outStr;
 

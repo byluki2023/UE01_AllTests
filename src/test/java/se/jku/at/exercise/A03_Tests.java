@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class A03_LohnberechnungenTest {
+public class A03_Tests {
 
     private static String output;
 

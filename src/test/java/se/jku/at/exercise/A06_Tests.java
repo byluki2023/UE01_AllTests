@@ -7,7 +7,7 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class A06_Wechselgeld_BerechnungTest {
+public class A06_Tests {
 
     @Test
     void testSampleOutput() {
