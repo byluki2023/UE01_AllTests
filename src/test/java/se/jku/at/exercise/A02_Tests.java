@@ -1,16 +1,15 @@
 package se.jku.at.exercise;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import se.jku.at.inout.OutTestHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import se.jku.at.inout.OutTestHelper;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class A02_Tests {
 

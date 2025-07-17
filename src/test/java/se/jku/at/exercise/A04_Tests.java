@@ -1,104 +1,67 @@
 package se.jku.at.exercise;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.regex.Pattern;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import se.jku.at.inout.OutTestHelper;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class A04_Tests {
 
-    static String distance;
-    static String fuelCostPerLiter;
-    static String consumptionPer100km;
-    static String maintenancePer100km;
-    static String fuelCost;
-    static String maintenanceCost;
-    static String totalCost;
+    static String outStr;
 
     @BeforeAll
-    static void captureOutput() {
-        PrintStream originalOut = System.out;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
+    public static void setup() {
+        // Redirect output
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(output);
+        OutTestHelper.redirectOutTo(ps);
 
-        A04_Betriebskostenrechner.main(new String[]{});
+        // Simulate input: distance, fuel/100km, cost/liter
+        String simulatedInput = String.join(System.lineSeparator(),
+                "1000",     // distance
+                "7.5",      // fuel per 100 km
+                "1.995"     // fuel cost per liter
+        );
+        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes(StandardCharsets.UTF_8)));
 
-        System.setOut(originalOut);
-        String actual = baos.toString().replace("\r\n", "\n");
+        // Run main
+        A04_Betriebskostenrechner.main(new String[0]);
 
-        String regex =
-                "(?s).*" +
-                        "Distanz:\\s+([\\d\\.,]+) km\\n" +
-                        ".*Treibstoffkosten/l:\\s+([\\d\\.,]+) Euro\\n" +
-                        ".*Verbrauch.*:\\s+([\\d\\.,]+) l\\n" +
-                        ".*Wartung.*:\\s+([\\d\\.,]+) Euro\\n" +
-                        ".*Treibstoffkosten:\\s+([\\d\\.,]+) Euro\\n" +
-                        ".*Wartungskosten:\\s+([\\d\\.,]+) Euro\\n" +
-                        ".*Gesamtkosten:\\s+([\\d\\.,]+) Euro.*";
-
-        Pattern p = Pattern.compile(regex);
-        var m = p.matcher(actual);
-
-        if (m.matches()) {
-            distance = m.group(1);
-            fuelCostPerLiter = m.group(2);
-            consumptionPer100km = m.group(3);
-            maintenancePer100km = m.group(4);
-            fuelCost = m.group(5);
-            maintenanceCost = m.group(6);
-            totalCost = m.group(7);
-        } else {
-            throw new AssertionError("Output did not match expected pattern.\nActual output:\n" + actual);
-        }
+        // Save output
+        outStr = output.toString();
+        System.out.println("DEBUG OUTPUT:\n" + outStr);
     }
 
     @Test
-    void testDistance() {
-        assertTrue(matchesNumber(distance, "1,000", "1.000"),
-                "Distance does not match. Was: " + distance);
+    public void testFuelCost() {
+        // 1000 km → 75 L * 1.995 = 149.625 → 149.63
+        assertTrue(outStr.contains("149.63") || outStr.contains("149,63"),
+                "Treibstoffkosten sollten 149.63 Euro sein");
     }
 
     @Test
-    void testFuelCostPerLiter() {
-        assertTrue(matchesNumber(fuelCostPerLiter, "2.00", "2,00"),
-                "Fuel cost per liter does not match. Was: " + fuelCostPerLiter);
+    public void testMaintenanceCost() {
+        // 1000 km → 10 * 4.2 = 42.00
+        assertTrue(outStr.contains("42.00") || outStr.contains("42,00"),
+                "Wartungskosten sollten 42.00 Euro sein");
     }
 
     @Test
-    void testConsumptionPer100km() {
-        assertTrue(matchesNumber(consumptionPer100km, "7.50", "7,50"),
-                "Consumption per 100 km does not match. Was: " + consumptionPer100km);
+    public void testTotalCost() {
+        // 149.63 + 42.00 = 191.63
+        assertTrue(outStr.contains("191.63") || outStr.contains("191,63"),
+                "Gesamtkosten sollten 191.63 Euro sein");
     }
 
     @Test
-    void testMaintenancePer100km() {
-        assertTrue(matchesNumber(maintenancePer100km, "4.20", "4,20"),
-                "Maintenance per 100 km does not match. Was: " + maintenancePer100km);
-    }
-
-    @Test
-    void testFuelCost() {
-        assertTrue(matchesNumber(fuelCost, "149.63", "149,63"),
-                "Fuel cost does not match. Was: " + fuelCost);
-    }
-
-    @Test
-    void testMaintenanceCost() {
-        assertTrue(matchesNumber(maintenanceCost, "42.00", "42,00"),
-                "Maintenance cost does not match. Was: " + maintenanceCost);
-    }
-
-    @Test
-    void testTotalCost() {
-        assertTrue(matchesNumber(totalCost, "191.63", "191,63"),
-                "Total cost does not match. Was: " + totalCost);
-    }
-
-    private static boolean matchesNumber(String actual, String english, String german) {
-        return actual.equals(english) || actual.equals(german);
+    public void testInputPromptsPresent() {
+        assertTrue(outStr.contains("Gefahrene Kilometer") && outStr.contains("Verbrauch") && outStr.contains("Benzinkosten"),
+                "Eingabeaufforderungen fehlen oder wurden nicht erkannt");
     }
 }
