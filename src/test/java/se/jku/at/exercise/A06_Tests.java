@@ -27,13 +27,17 @@ public class A06_Tests {
 
         A06_Wechselgeld_Berechnung.main(new String[0]);
 
-        outStr = output.toString().replace("\r\n", "\n");
+        outStr = output.toString()
+                .replace("\r\n", "\n")
+                .replace("¢", "c")  // ← ersetzt das problematische Zeichen
+                .trim();
+
         System.out.println("DEBUG OUTPUT:\n" + outStr);
     }
 
     @Test
     public void testAmountLine() {
-        assertMatches("Amount:\\s+\\$?983\\.93");
+        assertMatches("Amount:\\s+\\$983\\.93");
     }
 
     @Test
@@ -44,18 +48,20 @@ public class A06_Tests {
         assertMatches("Hamiltons:\\s+1\\s+x\\s+\\$10");
         assertMatches("Lincolns:\\s+0\\s+x\\s+\\$5");
         assertMatches("Bucks:\\s+3\\s+x\\s+\\$1");
-        assertMatches("Quarters:\\s+3\\s+x\\s+¢25");
-        assertMatches("Dimes:\\s+1\\s+x\\s+¢10");
-        assertMatches("Nickels:\\s+1\\s+x\\s+¢05");
-        assertMatches("Pennies:\\s+3\\s+x\\s+¢01");
+        assertMatches("Quarters:\\s+3\\s+x\\s+c25");
+        assertMatches("Dimes:\\s+1\\s+x\\s+c10");
+        assertMatches("Nickels:\\s+1\\s+x\\s+c05");
+        assertMatches("Pennies:\\s+3\\s+x\\s+c01");
     }
 
     @Test
-    public void testFinalEquation() {
-        assertMatches("9\\s+x\\s+100\\s+\\+\\s+1\\s+x\\s+50\\s+\\+\\s+1\\s+x\\s+20\\s+\\+\\s+1\\s+x\\s+10\\s+\\+\\s+0\\s+x\\s+5\\s+\\+\\s+3\\s+x\\s+1\\s+\\+\\s+3\\s+x\\s+0\\.25\\s+\\+\\s+1\\s+x\\s+0\\.10\\s+\\+\\s+1\\s+x\\s+0\\.05\\s+\\+\\s+3\\s+x\\s+0\\.01\\s+=\\s+983\\.93");
+    public void testSumLine() {
+        assertMatches("9 x 100 \\+ 1 x 50 \\+ 1 x 20 \\+ 1 x 10 \\+ 0 x 5 \\+ 3 x 1 \\+");
+        assertMatches("3 x 0\\.25 \\+ 1 x 0\\.10 \\+ 1 x 0\\.05 \\+ 3 x 0\\.01 = 983\\.93");
     }
 
-    private void assertMatches(String regex) {
+    // Helper method
+    private static void assertMatches(String regex) {
         assertTrue(Pattern.compile(regex).matcher(outStr).find(),
                 "Expected pattern not found:\n" + regex);
     }
